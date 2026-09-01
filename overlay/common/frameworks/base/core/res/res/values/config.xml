@@ -186,4 +186,30 @@
 
     <!-- Whether glanceable hub is enabled by default. -->
     <bool name="config_glanceableHubEnabledByDefault">true</bool>
+
+    <!-- ===================== OpenAICore ===================== -->
+
+    <!-- The crDroid implementation of the AOSP on-device-intelligence contract.
+
+         Naming the package here does more than route binds. Both
+         com.android.server.am.MemoryLimiter and
+         com.android.server.privatecompute.PccSandboxManagerInternal read these same two strings:
+         the first exempts the inference package from per-process memory limits, and the second
+         adds it to the set of packages allowed to host Private Compute Core components. Getting
+         the component name wrong therefore fails in three places at once, all of them quiet. -->
+    <string name="config_defaultOnDeviceIntelligenceService" translatable="false">org.crdroid.intelligence/org.crdroid.intelligence.broker.IntelligenceBrokerService</string>
+    <string name="config_defaultOnDeviceSandboxedInferenceService" translatable="false">org.crdroid.intelligence/org.crdroid.intelligence.inference.InferenceService</string>
+
+    <!-- Default holder of android.app.role.SYSTEM_VENDOR_INTELLIGENCE.
+
+         This role carries DISCOVER_APP_FUNCTIONS, which is what gives OpenAICore read access to
+         the platform's AppFunctions registry - the list of tool-shaped capabilities other apps
+         expose. On a de-Googled device nothing else claims it.
+
+         The role's stated requirements are binding on the holder: it must not request INTERNET,
+         and must not bind arbitrary applications. That is why model downloads live in a separate
+         package (org.crdroid.intelligence.models) and why the one cross-package bind OpenAICore
+         performs is declared in its sysconfig allow-association. Granting the role to a package
+         that later gains INTERNET would be a policy violation, not just untidy. -->
+    <string name="config_systemVendorIntelligence" translatable="false">org.crdroid.intelligence</string>
 </resources>
